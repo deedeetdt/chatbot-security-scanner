@@ -97,6 +97,20 @@ class ReportingCliTests(unittest.TestCase):
         self.assertIn("HTTPS", combined_output)
         self.assertNotIn("sk-secret-value", combined_output)
 
+    def test_gemini_target_requires_model_and_gemini_api_key(self) -> None:
+        result = run_cli(
+            "scan",
+            "--target",
+            "gemini",
+            "--model",
+            "gemini-3.5-flash",
+            env={"GEMINI_API_KEY": ""},
+        )
+
+        self.assertEqual(2, result.returncode)
+        combined_output = result.stdout + result.stderr
+        self.assertIn("GEMINI_API_KEY", combined_output)
+
 
 if __name__ == "__main__":
     unittest.main()

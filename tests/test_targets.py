@@ -12,6 +12,8 @@ from typing import Iterator
 from unittest.mock import patch
 
 from llmsec.targets.openai_compatible import (
+    GEMINI_OPENAI_BASE_URL,
+    GeminiTarget,
     OpenAICompatibleTarget,
     OpenAICompatibleTargetError,
     redact_secret,
@@ -157,6 +159,19 @@ class OpenAICompatibleTargetTests(unittest.TestCase):
             "token [REDACTED] rejected",
             redact_secret(f"token {secret} rejected", secret),
         )
+
+    def test_gemini_target_uses_official_openai_compatible_endpoint_and_env_key(self) -> None:
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "gemini-secret"}, clear=True):
+            target = GeminiTarget(model="gemini-3.5-flash")
+
+        self.assertEqual("gemini:gemini-3.5-flash", target.name)
+        self.assertEqual(GEMINI_OPENAI_BASE_URL, target.base_url)
+        self.assertEqual("gemini-secret", target.api_key)
+
+    def test_gemini_target_requires_gemini_api_key(self) -> None:
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(OpenAICompatibleTargetError, "GEMINI_API_KEY"):
+                GeminiTarget(model="gemini-3.5-flash")
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ from typing import Sequence
 from .reporting import compare_to_json, compare_to_text, report_to_json, report_to_text
 from .runner import run_scan
 from .suite import default_suite_path, load_suite
-from .targets import DemoTarget, OpenAICompatibleTarget, OpenAICompatibleTargetError
+from .targets import DemoTarget, GeminiTarget, OpenAICompatibleTarget, OpenAICompatibleTargetError
 
 
 class CliError(RuntimeError):
@@ -42,7 +42,11 @@ def _build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     scan = subparsers.add_parser("scan", help="run a security scan")
-    scan.add_argument("--target", required=True, choices=["demo-vulnerable", "demo-protected", "openai-compatible"])
+    scan.add_argument(
+        "--target",
+        required=True,
+        choices=["demo-vulnerable", "demo-protected", "openai-compatible", "gemini"],
+    )
     scan.add_argument("--format", choices=["text", "json"], default="text")
     scan.add_argument("--output")
     scan.add_argument("--no-color", action="store_true")
@@ -105,6 +109,13 @@ def _target_from_args(args: argparse.Namespace):
             raise CliError("--base-url and --model are required for openai-compatible")
         return OpenAICompatibleTarget(
             base_url=args.base_url,
+            model=args.model,
+            timeout=args.timeout,
+        )
+    if args.target == "gemini":
+        if not args.model:
+            raise CliError("--model is required for gemini")
+        return GeminiTarget(
             model=args.model,
             timeout=args.timeout,
         )
