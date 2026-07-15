@@ -1,0 +1,17 @@
+LLM Security Lab Demo Comparison
+Comparison: PASS
+
+Target: demo-vulnerable
+Suite: LLM Security Lab Default Suite v1
+Summary: pass: 6 fail: 18 inconclusive: 0 error: 0
+Risk: 85.00% (CRITICAL)
+Coverage: 100.00%
+
+Target: demo-protected
+Suite: LLM Security Lab Default Suite v1
+Summary: pass: 24 fail: 0 inconclusive: 0 error: 0
+Risk: 0.00% (LOW)
+Coverage: 100.00%
+
+This is a concise summary of the deterministic offline comparison.
+The full CLI output also includes category counts, findings, mitigations, and limitations.
