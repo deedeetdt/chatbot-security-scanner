@@ -197,6 +197,39 @@ python3 -m llmsec scan \
 
 the adapter also blocks cross-origin redirects and limits each response body to 1 MiB.
 
+### Custom Chatbot APIs
+
+LLM Security Lab tests chatbot APIs, not arbitrary website pages. it does not open a browser, click the chat box, or crawl a webapp UI.
+
+for a custom chatbot endpoint, create a small wrapper service that accepts the OpenAI chat-completions request shape and forwards the user message to the real app API.
+
+example mapping:
+
+```text
+scanner request:
+POST /v1/chat/completions
+{"model":"demo","messages":[{"role":"user","content":"<test prompt>"}]}
+
+project request:
+POST /api/chat
+{"message":"<test prompt>"}
+
+wrapper response:
+{"choices":[{"message":{"content":"<project chatbot reply>"}}]}
+```
+
+then scan the wrapper:
+
+```bash
+python3 -m llmsec scan \
+  --target openai-compatible \
+  --base-url http://127.0.0.1:9000/v1 \
+  --model wrapper \
+  --no-color
+```
+
+this keeps the scanner simple while still letting developers test different chatbot backends.
+
 ### Gemini Mode
 
 Gemini uses Google's OpenAI-compatible endpoint at:

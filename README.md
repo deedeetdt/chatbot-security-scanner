@@ -167,6 +167,19 @@ python3 -m llmsec scan \
 
 `LLMSEC_API_KEY` is optional. if it is present, the base URL must use HTTPS. keys come only from environment variables; there is no key command-line option.
 
+### Custom Chatbot APIs
+
+this tool does not click through a normal website UI. it sends test prompts directly to a chatbot API.
+
+if a project already exposes an OpenAI-compatible endpoint, use `openai-compatible` directly. if the project has a custom endpoint, such as `POST /api/chat`, add a small wrapper that translates:
+
+```text
+OpenAI-style request -> project chat API request
+project chat API response -> OpenAI-style response
+```
+
+the wrapper only needs to accept `messages` and return text at `choices[0].message.content`. after that, this scanner can test it with `--target openai-compatible`.
+
 ### Gemini
 
 Gemini support uses Google's OpenAI-compatible endpoint. it requires a Gemini API key and a compatible model ID:
